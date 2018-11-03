@@ -19,13 +19,13 @@ Human genomic sequences and annotation files (GRCh38.p12) were downloaded from t
 | GRCh38.p12.gff    | 56394751c00a5bdfb74152a7ed146855 | Genome annotation                                         |
    
   
-**Prepare genome annotation for gene expression analysis.** I deleted extrachromosomal contigs and annotations. I also discarded 'Gnomon' (Predicted) records from gff file and only left RefSeq (manually curated). Perl scripts are included in the GitHub repository.   
+**Preparation of genome annotation for gene expression analysis.** Extrachromosomal contigs and annotations were omitted. 'Gnomon' (Predicted) records from gff file were also omitted and only 'RefSeq' (manually curated) left. Perl and R scripts are included in the GitHub repository.   
 ```bash
 Discard_extrachromosomal_contigs.pl GRCh38.p12.fna >GRCh38.p12.custom.fna
 Discard_extrachromosomal_annotation.pl GRCh38.p12.gff >GRCh38.p12.custom.gff
 Discard_gnomon_annotation.pl >GRCh38.p12.Refseq.gff
 ```
-Remove non-coding RNA genes, leave only coding genes with their mRNA, transcript, exon, and CDS children features.
+Non-coding RNA genes were removed, only coding genes with their mRNA, transcript, exon, and CDS children features were left.
 '''R
 Discard_noncoding_annotation.R
 '''
