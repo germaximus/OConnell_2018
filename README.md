@@ -26,9 +26,9 @@ Discard_extrachromosomal_annotation.pl GRCh38.p12.gff >GRCh38.p12.custom.gff
 Discard_gnomon_annotation.pl >GRCh38.p12.Refseq.gff
 ```
 Non-coding RNA genes were removed, only coding genes with their mRNA, transcript, exon, and CDS children features were left.
-'''R
+```sh
 Discard_noncoding_annotation.R
-'''
+```
 
 
 
