@@ -51,21 +51,22 @@ extract.id <- function(gff, type, level = "Primary", parents){ # simplified vers
 
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Load GFF annotation file
-gff    <- fread(file="GRCh38.p12.Refseq.gff", skip = 8, stringsAsFactors = F, header = F, fill = T, na.strings = c("", "NA"), sep="\t")
-gff    <- na.omit(gff) # deals with unwanted #comment lines in the gff
+gff    <- fread(file="GRCh38.p12.Refseq.gff", skip = 8, stringsAsFactors = F, header = F, fill = T, na.strings = c("", "NA"), sep="\t") %>% na.omit() #deals with unwanted #comment lines in the gff
 gff$ID <- apply(gff[,9], 1, function(x) { id <- substr(x, 4, regexpr(';', x) - 1) })
 
 # create a table of parents-children relations
 parents.table <- chain(linkage(gff))
 
 # Create a list of top parents with all childrens listed (Caution: takes ~1 hour) # Save the R object for future use to avoid re-calculations.
-parents.tree <- lapply(parents.table[parents.table$Parent1 == 'Primary','ID'], function(x) { return(NULL) }) %>% setNames(parents.table[parents.table$Parent1 == 'Primary',] %>% .[,'ID'])
+parents.tree <- lapply(unique(parents.table[parents.table$Parent1 == 'Primary','ID']), function(x) { return(NULL) }) %>% setNames(unique(parents.table[parents.table$Parent1 == 'Primary', 'ID']))
 for(i in 1:nrow(parents.table)) {
           if (!isTRUE(parents.table[i,'ID'] %in% names(parents.tree)) ) {
             children <- parents.table[i, -c(1)] %>% unname() %>% unlist()
             parent   <- children[children %in% names(parents.tree)]
             parents.tree[[parent]] <- c(parents.tree[[parent]], parents.table[i, 'ID']) %>% unique()   }
-} #saveRDS(parents.tree, file = "parents_tree.rds")
+} 
+
+#saveRDS(parents.tree, file = "parents_tree.rds")
 #parents.tree <- readRDS('parents_tree.rds')
 
 # fix gene boundaries to be the same as the span of children features. The discrepancy occured when I removed Gnomon records. Some gene names were shared between BestRefseq and Gnomon as 'BestRefSeq%2CGnomon'. Their boundaries are wider than corresponding BestRefSeq childs.
@@ -78,9 +79,9 @@ for(name in names(parents.tree)) {
       gene_end   <- slice[, V5] 
 
       if(!is.null(parents.tree[[name]]))    {
-        children_start <- sapply(parents.tree[[ name ]], function(x) {  return(gff[x, V4, on = 'ID'] %>% min()     )     }) %>% min()
-        children_end   <- sapply(parents.tree[[ name ]], function(x) {  return(gff[x, V5, on = 'ID'] %>% max()     )     }) %>% max()
-
+        children_start <- gff[parents.tree[[name]], V4, on = 'ID'] %>% min()
+        children_end   <- gff[parents.tree[[name]], V5, on = 'ID'] %>% max()
+        
         if(children_start > gene_start) { gene_start = children_start }
         if(children_end   < gene_end  ) { gene_end   = children_end   }
       } 
@@ -88,11 +89,11 @@ for(name in names(parents.tree)) {
       gff[name, on = 'ID', V5 := gene_end]
     }
 } 
-        #con <- file("GRCh38.p12.Refseq.gff", "r")
-        #header <- readLines(con, n = 8)
-        #write.table(header, file = "GRCh38.p12.Refseq.fixed.gff", col.names = F, row.names = F, quote = F)
-        #write.table(gff2[,1:9], file = "GRCh38.p12.Refseq.fixed.gff", sep = "\t", row.names = F, col.names = F, quote = F, append = T)
-        #close(con); rm(con)
+        # con <- file("GRCh38.p12.Refseq.gff", "r")
+        # header <- readLines(con, n = 8)
+        # write.table(header, file = "GRCh38.p12.Refseq.fixed.gff", col.names = F, row.names = F, quote = F)
+        # write.table(gff[,1:9], file = "GRCh38.p12.Refseq.fixed.gff", sep = "\t", row.names = F, col.names = F, quote = F, append = T)
+        # close(con); rm(con)
 
 # Remove non-coding features
 # check all present top level features: table(gff[,3])
@@ -102,11 +103,11 @@ for(name in names(parents.tree)) {
 # Therefore, do not remove 'transcripts' otherwise you remove their gene parents.
 
 gff2 <- remove.features(gff, c('antisense_RNA','biological_region','cDNA_match','centromere','guide_RNA','lnc_RNA','match','miRNA','primary_transcript','pseudogene','region','RNase_MRP_RNA','RNase_P_RNA','rRNA','scRNA','snoRNA','snRNA','telomerase_RNA','tRNA','vault_RNA','Y_RNA'), parents.table)
-        # con <- file("GRCh38.p12.Refseq.coding.gff", "r")
-        # header <- readLines(con, n = 8)
-        # write.table(header, file = "GRCh38.p12.Refseq.coding.gff", col.names = F, row.names = F, quote = F)
-        # write.table(gff2[,1:9], file = "GRCh38.p12.Refseq.coding.gff", sep = "\t", row.names = F, col.names = F, quote = F, append = T)
-        # close(con); rm(con)
+        con <- file("GRCh38.p12.Refseq.gff", "r")
+        header <- readLines(con, n = 8)
+        write.table(header, file = "GRCh38.p12.Refseq.coding.gff", col.names = F, row.names = F, quote = F)
+        write.table(gff2[,1:9], file = "GRCh38.p12.Refseq.coding.gff", sep = "\t", row.names = F, col.names = F, quote = F, append = T)
+        close(con); rm(con)
 
 
 
@@ -118,110 +119,112 @@ gff2 <- remove.features(gff, c('antisense_RNA','biological_region','cDNA_match',
 
 
 
-# # Extract coding genes ID that have both CDS and mRNA children
-# gene.id   <- intersect(extract.id(gff, "CDS", level = "Primary", parents.table), extract.id(gff, "mRNA", level = "Primary", parents.table) ) # foolproof method because some coding genes might have only one type (CDS or mRNA) listed in annotation
-# gene.lines    <- match(gene.id, gff$ID)
+
+
+
+
+
+
+
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------
+# #gff2 <- copy(gff)
+# gff <- copy(gff2)
+# setindex(gff, ID)
 # 
-#         # check if these genes are proper genes and not some weird IDs
-#         # if (all(grepl('gene', gene.id))) {print('All found gene IDs are in the form of "geneX" ')} else { print('Some gene IDs are not the form of "geneX" ') }
-#  
-# primary.id    <- unique(parents.table[parents.table[,2] == "Primary", 1]) # speeds up execution of next snippet
-# primary.lines <- match(primary.id, gff$ID)                                # speeds up execution of next snippet
+# coding_gene.id     <- intersect(extract.id(gff, "CDS", level = "Primary", parents.table), extract.id(gff, "mRNA", level = "Primary", parents.table) ) # foolproof method because some coding genes might have only one type (CDS or mRNA) listed in annotation by mistake
+# coding_gene.lines  <- match(coding_gene.id, gff$ID)  #line indexing for instant search
 # 
-# gene.record <- lapply(1:2, function(x) {
-#   gene <- gff[gene.lines[x], ] %>% unlist() %>% unname()
-#   
-#   #find upper neighbour on the same strand
-#   upper <- function(a){
-#     temp <- gff[primary.lines[match(gene.lines[x], primary.lines) - a], ] %>% unlist() %>% unname()
-#     if(temp[1] == gene[1]) {
-#       if (temp[7] == gene[7]) { return(temp) }   else { return (upper(a + 1)) }
-#     }
-#     else {return(NULL)}
-#   }
-#   
-#   #find lower neighbour on the same strand
-#   lower <- function(a){
-#     temp <- gff[primary.lines[match(gene.lines[x], primary.lines) + a], ] %>% unlist() %>% unname()
-#     if(temp[1] == gene[1]) {
-#       if (temp[7] == gene[7]) { return(temp) }   else { return (lower(a + 1)) }
-#     }
-#     else {return(NULL)}
-#   }
-#   
-#   upper.neighbour <- upper(1)
-#   lower.neighbour <- lower(1)
-#   
-#   #extract gff lines for the gene by taking a range between gff line with gene name and the lower neighbour
-#   if (length(lower.neighbour) > 0) { lines <- gff[gene.lines[x]:(match(lower.neighbour[10], gff$ID)-1), ]  }
-#   else { print(gene.id[x])
-#     if(!is.na(unique(unname(unlist(gff[,1])))[match(gene[1], unique(unname(unlist(gff[,1])))) + 1])) { lines <- gff[gene.lines[x]:match((unique(unname(unlist(gff[,1]))))[match(gene[1], unique(unname(unlist(gff[,1])))) + 1], unname(unlist(gff[,1]))), ] }
-#     else { lines <- gff[gene.lines[x]:nrow(gff), ] }
-#   }
-#   #discard lines for features on the opposite strand
-#   lines <- as.data.frame(lines)
-#   lines <- lines[lines$V7 == gene[7], ]
-#   
-#   #boundaries of exons, mRNAs and CDSs
-#   exon.left.ends <- c()
-#   exon.right.ends <- c()
-#   mRNA.left.ends <- c()
-#   mRNA.right.ends <- c()
-#   CDS.left.ends <- c()
-#   CDS.right.ends <- c()
-#   for (i in 1:nrow(lines)) { 
-#     if(lines[i,3] == 'exon') { 
-#       exon.left.ends = c(exon.left.ends, lines[i,4]) 
-#       exon.right.ends = c(exon.right.ends, lines[i,5])   } 
-#     else if (lines[i,3] == 'mRNA') {
-#       mRNA.left.ends = c(mRNA.left.ends, lines[i,4])
-#       mRNA.right.ends = c(mRNA.right.ends, lines[i,5])   }
-#     else if (lines[i,3] == 'CDS') {
-#       CDS.left.ends <- c(CDS.left.ends, lines[i,4])
-#       CDS.right.ends <- c(CDS.right.ends, lines[i,5])
-#     }
-#   }
-#   exon.limits <- c(min(exon.left.ends), max(exon.right.ends))
-#   mRNA.limits <- c(min(mRNA.left.ends), max(mRNA.right.ends))
-#   CDS.limits <- c(min(CDS.left.ends), max(CDS.right.ends))
-#   
-#   utr.left <- exon.limits[1] - CDS.limits[1]
-#   utr.right <- exon.limits[2] - CDS.limits[2]
-#   
-#   gap.left <- as.integer(gene[4]) - as.integer(upper.neighbour[5]) - 1
-#   gap.right <- as.integer(lower.neighbour[4]) - as.integer(gene[5]) - 1
-#   
-#   new.gene.left = as.integer(gene[4])
-#   new.gene.right = as.integer(gene[5])
-#   if(utr.left  < 100 & gap.left  > 1000)  { 
-#     new.gene.left  <- as.integer(gene[4]) - 100 + utr.left
-#     new.mRNA.left  <- new.gene.left
-#     new.exon.left  <- new.gene.left
-#   }
-#   if(utr.right < 100 & gap.right > 1000)  { 
-#     new.gene.right <- as.integer(gene[5]) + 100 - utr.right 
-#     new.mRNA.right <- new.gene.right
-#     new.exon.right <- new.gene.right
-#   }
-#   
-#   return(list( "gene"  = list('id' = gene.id[x], 
-#                               'coordinates' = gene[4:5],
-#                               'lines' = lines,
-#                               'exon_limits' = exon.limits, 
-#                               'mRNA_limits' = mRNA.limits, 
-#                               'CDS_limits' = CDS.limits,
-#                               'utr_left' = utr.left,
-#                               'utr_right' = utr.right,
-#                               'gap_left' = gap.left,
-#                               'gap_right' = gap.right,
-#                               'new_gene_left' = new.gene.left,
-#                               'new_gene_right' = new.gene.right), 
-#                "upper" = list("id" = upper.neighbour[10], "coordinates" = upper.neighbour[4:5]),
-#                "lower" = list("id" = lower.neighbour[10], "coordinates" = lower.neighbour[4:5]) ))
-#   
-#   
-# })  %>% setNames(., gene.id[1:2])    
+# primary.id    <- names(parents.tree)                 # speeds up execution of next snippet
+# primary.lines <- match(primary.id, gff$ID)           # speeds up execution of next snippet
 # 
+# 
+# 
+# 
+# for(name in names(parents.tree)) {
+#   print(name)
+#   gene_model <- gff[c(name, parents.tree[[name]]), on = 'ID']
+# #  rna.id <- parents.tree[[name]][grep('rna', parents.tree[[name]])]
+#   
+# 
+# #  rna <- gene_model[gene_model$ID == rna.id & gene_model$V3 == 'mRNA', c('V4', 'V5')]
+#   
+#   
+# 
+#   #find lower neighbour
+#   lower_neighbor_model <- data.table()
+#   flag <- 0
+#   limit <- 1
+#   while(flag == 0) {
+#     neighbor <- names(parents.tree)[match(name, names(parents.tree)) + limit]
+#     if(!is.na(neighbor)) { 
+#        lower_neighbor_model <-  gff[c(neighbor, parents.tree[[neighbor]]), on = 'ID'] 
+#        if(lower_neighbor_model[1, V7] == gene_model[1, V7] & lower_neighbor_model[1, V1] == gene_model[1, V1]) { flag <- 1  }
+#        else {  limit = limit + 1; if(limit == 100) {flag <- 2}  }
+#     }
+#     else{flag <- 2}
+#   }
+#   if(flag == 2) {lower_neighbor_model <- 'abscent'} 
+#   
+#   #find upper neighbour
+#   upper_neighbor_model <- data.table()
+#   flag <- 0
+#   limit <- 1
+#   while(flag == 0) {
+#     neighbor <- names(parents.tree)[match(name, names(parents.tree)) - limit]
+#     if(length(neighbor) > 0) { 
+#       upper_neighbor_model <-  gff[c(neighbor, parents.tree[[neighbor]]), on = 'ID'] 
+#       if(upper_neighbor_model[1, V7] == gene_model[1, V7] & upper_neighbor_model[1, V1] == gene_model[1, V1]) { flag <- 1  }
+#       else {  limit = limit + 1; if(limit == 100) {flag <- 2}  }
+#     }
+#     else{flag <- 2}
+#   }
+#   if(flag == 2) {upper_neighbor_model <- 'abscent'} 
+#     
+# 
+#   
+#       
+#         #boundaries of exons, mRNAs and CDSs
+#         if(length(gene_model[V3 == 'exon', V4]) != 0) {exon.left  <- gene_model[V3 == 'exon', c('V4', 'ID')]}  else {exon.left  <- 'abscent'}
+#         if(length(gene_model[V3 == 'exon', V5]) != 0) {exon.right <- gene_model[V3 == 'exon', c('V5', 'ID')]}  else {exon.right <- 'abscent'}
+#         if(length(gene_model[V3 == 'mRNA', V4]) != 0) {mRNA.left  <- gene_model[V3 == 'mRNA', c('V4', 'ID')]}  else {mRNA.left  <- 'abscent'}
+#         if(length(gene_model[V3 == 'mRNA', V5]) != 0) {mRNA.right <- gene_model[V3 == 'mRNA', c('V5', 'ID')]}  else {mRNA.right <- 'abscent'}
+#         if(length(gene_model[V3 == 'CDS',  V4]) != 0) {CDS.left   <- gene_model[V3 == 'CDS',  c('V4', 'ID')]}  else {CDS.left   <- 'abscent'}
+#         if(length(gene_model[V3 == 'CDS',  V5]) != 0) {CDS.right  <- gene_model[V3 == 'CDS',  c('V5', 'ID')]}  else {CDS.right  <- 'abscent'}  
+#       
+#         if(typeof(CDS.left)  != 'character' & typeof(mRNA.left)  != 'character') {UTR5 <- min(CDS.left[,1])   - min(mRNA.left[,1])}  else {UTR5 <- 'abscent'}
+#         if(typeof(CDS.right) != 'character' & typeof(mRNA.right) != 'character') {UTR3 <- max(mRNA.right[,1]) - max(CDS.right[,1])}  else {UTR3 <- 'abscent'}
+#         
+#         if(UTR5 != 'abscent' & typeof(upper_neighbor_model) != 'character') {
+#            if(UTR5 < 100 & gene_model[1, V4] - upper_neighbor_model[1,V5] > 1000) {
+#                gff[name, on = 'ID', V4 := V4 - 100 + UTR5]
+#                gff[mRNA.left[mRNA.left$V4 == min(mRNA.left[,1]), ID], on = 'ID', V4 := V4 - 100 + UTR5]
+#                gff[exon.left[exon.left$V4 == min(exon.left[,1]), ID], on = 'ID', V4 := V4 - 100 + UTR5]     }
+#         }
+#         
+#         if(UTR3 != 'abscent' & typeof(lower_neighbor_model) != 'character')  {
+#            if(UTR3 < 100 & lower_neighbor_model[1,V4] - gene_model[1, V5] > 1000) {
+#               gff[name, on = 'ID', V5 := V5 + 100 - UTR3]
+#               gff[mRNA.right[mRNA.right$V5 ==  min(mRNA.right[,1]), ID], on = 'ID', V5 := V5 + 100 - UTR3]
+#               gff[exon.right[exon.right$V5 ==  min(exon.right[,1]), ID], on = 'ID', V5 := V5 + 100 - UTR3]  }
+#         }
+#   
+# 
+#     
+# }
+#   
+#   
+#   
+#   
+# 
+
+
+
+
+
+
+
 
 
 
