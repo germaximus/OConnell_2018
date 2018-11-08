@@ -85,6 +85,6 @@ featureCounts -g gene -s 1 accepted_hits.bam -a ./tophat-2.1.1/Human_indices/Ref
 Although this information can be obtained from Ribo-seq and mRNA-seq genomic alignment files, it is much easier to re-align raw reads to the *mRNA-100uniq.fasta* file prepared earlier because aligned reads will have transcript coordinates (discontnious) instead of genomic (broken down into exons).
 ```bash
 Coverage.pl uniq.bwt #make sure mRNA_100uniq.fasta is in the same folder with the script or add full path inside the sript
-Coverge.R #process coverage files, plot and expore
+Coverge.R #process coverage files, plot and explore
 ```
 <img src="figures/Start_codon_coverage.png" width="400"> <img src="figures/Stop_codon_coverage.png" width="400">
