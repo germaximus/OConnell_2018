@@ -86,8 +86,8 @@ Although this information can be obtained from Ribo-seq and mRNA-seq genomic ali
 Coverage.pl uniq.bwt #make sure mRNA_100uniq.fasta is in the same folder with the script or add full path inside the sript
 Coverge.R #process coverage files, plot and expore
 ```
-![start codon](https://github.com/germaximus/OConnell_2018/blob/master/figures/Start_codon_coverage.pdf)
-![stop codon](https://github.com/germaximus/OConnell_2018/blob/master/figures/Stop_codon_coverage.pdf)
+![start codon](figures/Start_codon_coverage.png)
+![stop codon](figures/Stop_codon_coverage.png)
 
 
 
