@@ -75,10 +75,15 @@ featureCounts -g gene -s 1 accepted_hits.bam -a ./tophat-2.1.1/Human_indices/Ref
 ```
 
 ### Gene Expression Analysis
-**mRNA-seq**  
-**Ribo-seq**  
-**Translation efficiency**  
-
+<details> <summary><b>mRNA-seq</b></summary>
+   
+</details>
+<details> <summary><b>Ribo-seq</b></summary>
+  
+</details>
+<details> <summary><b>Translation efficiency</b></summary>
+  
+</details>
 
 
 ### Metagene Coverage Profiles
