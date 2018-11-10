@@ -1,0 +1,11 @@
+condition	file
+patient-1	0128-01_p6_1.counts
+patient-2	0128-01_p6_2.counts
+patient-3	0128-01_p6_3.counts
+patient-4	0128-01_p7_1.counts
+patient-5	0128-01_p7_2.counts
+patient-6	0128-01_p7_3.counts
+HDF-2	HDF_p5_2.counts
+HDF-3	HDF_p5_3.counts
+2127-2	2127_p9_2.counts
+2127-3	2127_p9_3.counts
