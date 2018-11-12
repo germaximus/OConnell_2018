@@ -97,19 +97,22 @@ x.id <- read.table(file = list.files(path = "./mRNA_featureCounts", pattern = "*
 keep <- read.table(file = list.files(path = "./mRNA_featureCounts", pattern = "*.counts", full.names = T)[1], skip=1, header=TRUE, row.names=1, stringsAsFactors = FALSE) %>% 
   .[!grepl('NC_000024.', sapply(strsplit(.$Chr, ';', fixed = T), function(x) {return(x[1])})), ] %>% .[-c(na.omit(match(x.id,row.names(.)))),] %>% row.names(.)
 
-
-
-
 #------------------------------------------- Import & analyse mRNA-seq ----------------------------------------------------
 sample_table <- read.table(file = "./mRNA_featureCounts/sample_table.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 countdata <- lapply(sample_table$file, function(x) {
   data <- read.table(file = paste0("./mRNA_featureCounts/", x), skip=1, header=TRUE, row.names=1, stringsAsFactors = FALSE)
   output <- data[,6] %>% setNames(., row.names(data))
 }) %>% setNames(., sample_table$condition) %>% as.data.frame(., check.names = F) %>% .[row.names(.) %in% keep, ]
-
+```
+```R
 # Optional matrix plot
 # pairs(countdata, log = "yx", pch = 20)
-          
+```
+<details> <summary><b>mRNA-seq samples correlation plot</b></summary>
+<img src="figures/mRNAseq_pairs.png" width="400"> 
+</details>
+
+```R
 # colData <- data.frame(   sample = colnames(countdata),
 #                          group = factor(c(rep("patient_batch1", 3), rep("patient_batch2", 3), rep("HDF",3), rep("2127",3)), levels = c("patient_batch1","patient_batch2","HDF","2127")),
 #                          stringsAsFactors = FALSE
