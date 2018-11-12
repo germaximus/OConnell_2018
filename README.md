@@ -106,34 +106,37 @@ countdata <- lapply(sample_table$file, function(x) {
 ```
 ```R
 # Optional matrix plot
-# pairs(countdata, log = "yx", pch = 20)
+pairs(countdata, log = "yx", pch = 20)
 ```
 <details> <summary>mRNA-seq samples correlation plot</summary><img src="figures/mRNAseq_pairs.png"></details>  
 
 ```R
-# colData <- data.frame(   sample = colnames(countdata),
-#                          group = factor(c(rep("patient_batch1", 3), rep("patient_batch2", 3), rep("HDF",3), rep("2127",3)), levels = c("patient_batch1","patient_batch2","HDF","2127")),
-#                          stringsAsFactors = FALSE
-#                      )
-# dds <-DESeqDataSetFromMatrix(countData = countdata, colData = colData, design =~group )
-# dds <- dds[ rowMeans(counts(dds)) >= 10 , ] 
-# dds <- DESeq(dds)
-# 
-#     # plotting correlation heatmap and PCA between replicates and conditions
-#     rld <- rlogTransformation(dds, blind=TRUE)
-#     hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
-#     distsRL <- dist(t(assay(rld)))
-#     mat <- as.matrix(distsRL)
-#     rownames(mat) <- colnames(mat) <- row.names(colData(dds))
-#     hc <- hclust(distsRL)
-#     pdf(file = "mRNAseq_heatmap.pdf")
-#     heatmap.2(mat, Rowv=as.dendrogram(hc),symm=TRUE,key=TRUE, density.info=c("none"), trace="none",col = rev(hmcol),margin=c(10, 10))
-#     dev.off()
-#     
-#     pdf(file = "mRNAseq_PCA.pdf")
-#     plotPCA(rld, intgroup=c("group"))
-#     dev.off()
+colData <- data.frame(   sample = colnames(countdata),
+                         group = factor(c(rep("patient_batch1", 3), rep("patient_batch2", 3), rep("HDF",3), rep("2127",3)), levels = c("patient_batch1","patient_batch2","HDF","2127")),
+                          stringsAsFactors = FALSE
+                      )
+dds <-DESeqDataSetFromMatrix(countData = countdata, colData = colData, design =~group )
+dds <- dds[ rowMeans(counts(dds)) >= 10 , ] 
+dds <- DESeq(dds)
+ 
+     # plotting correlation heatmap and PCA between replicates and conditions
+     rld <- rlogTransformation(dds, blind=TRUE)
+     hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
+     distsRL <- dist(t(assay(rld)))
+     mat <- as.matrix(distsRL)
+     rownames(mat) <- colnames(mat) <- row.names(colData(dds))
+     hc <- hclust(distsRL)
+     pdf(file = "mRNAseq_heatmap.pdf")
+     heatmap.2(mat, Rowv=as.dendrogram(hc),symm=TRUE,key=TRUE, density.info=c("none"), trace="none",col = rev(hmcol),margin=c(10, 10))
+     dev.off()
+     
+     pdf(file = "mRNAseq_PCA.pdf")
+     plotPCA(rld, intgroup=c("group"))
+     dev.off()
+```
+<details> <summary>mRNA-seq samples heatmap and PCA</summary><img src="figures/mRNAseq_heatmap.png"><img src="figures/mRNAseq_PCA.png"></details>  
 
+```R 
     # #customized PCA plot, save to a file
     # pdf(file = "transcriptome_PCA_plot.pdf", width = 7, height = 4)
     # rv <- rowVars(assay(rld))
