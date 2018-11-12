@@ -109,8 +109,9 @@ countdata <- lapply(sample_table$file, function(x) {
 # pairs(countdata, log = "yx", pch = 20)
 ```
 <details> <summary><b>mRNA-seq samples correlation plot</b></summary>
-<img src="figures/mRNAseq_pairs.png" width="400"> 
+<img src="figures/mRNAseq_pairs.png"> 
 </details>
+
 
 ```R
 # colData <- data.frame(   sample = colnames(countdata),
