@@ -198,7 +198,7 @@ countdata <- lapply(sample_table$file, function(x) {
 # Optional matrix plot
 # pairs(countdata, log = "yx", pch = 20)
 ```
-<details> <summary>mRNA-seq samples correlation plot</summary><img src="figures/mRNAseq_pairs.png"></details>    
+<details><summary>Ribo-seq samples correlation plot</summary><img src="figures/Riboseq_pairs.png"></details>    
 ```R
 # Sample patient-4 ("0128-01_p7_1") behaves as a technical outlier, therefore I droped it. All patient replicates are also pooled together
 countdata <- countdata[c(1:3,5:10)]
