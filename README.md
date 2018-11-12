@@ -108,7 +108,8 @@ countdata <- lapply(sample_table$file, function(x) {
 # Optional matrix plot
 # pairs(countdata, log = "yx", pch = 20)
 ```
-<details> <summary>mRNA-seq samples correlation plot</summary><img src="figures/mRNAseq_pairs.png"></details>
+<details> <summary>mRNA-seq samples correlation plot</summary><img src="figures/mRNAseq_pairs.png"></details>  
+
 ```R
 # colData <- data.frame(   sample = colnames(countdata),
 #                          group = factor(c(rep("patient_batch1", 3), rep("patient_batch2", 3), rep("HDF",3), rep("2127",3)), levels = c("patient_batch1","patient_batch2","HDF","2127")),
@@ -198,7 +199,8 @@ countdata <- lapply(sample_table$file, function(x) {
 # Optional matrix plot
 # pairs(countdata, log = "yx", pch = 20)
 ```
-<details><summary>Ribo-seq samples correlation plot</summary><img src="figures/Riboseq_pairs.png"></details>    
+<details><summary>Ribo-seq samples correlation plot</summary><img src="figures/Riboseq_pairs.png"></details>  
+
 ```R
 # Sample patient-4 ("0128-01_p7_1") behaves as a technical outlier, therefore I droped it. All patient replicates are also pooled together
 countdata <- countdata[c(1:3,5:10)]
