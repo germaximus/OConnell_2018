@@ -325,7 +325,7 @@ Although this information can be obtained from Ribo-seq and mRNA-seq genomic ali
 Coverage.pl uniq.bwt #make sure mRNA_100uniq.fasta is in the same folder with the script or add full path inside the sript
 Coverge.R #process coverage files, plot and explore
 ```
-<details><sammary> Ribosome occupancy plot </summary>
+<details><summary> Ribosome occupancy plot </summary>
  
 Green, red, and blue tracks are patient and two healthy controls corespondingly. Grey track is the mRNA coverage from one of healthy controls. Transcripts are aligned by start codon (left panel) or stop codon (right panel). 100 nt unto UTR are added on both sides.
  
