@@ -39,13 +39,13 @@ mRNA_extractor.pl GRCh38.p12.gbk	#generates temp3 file as output
 ```
 Fill up their UTRs to 100 nt based on the genomic coordinates (if they are shorter). Takes temp3 file from previous step as input. Make sure GRCh38.p12.fna genome reference is present in the same folder.
 ```bash
-mRNA_genome_filter.pl	#generates mRNA_100.fasta containing 19423 transcripts
+mRNA_genome_filler.pl	#generates mRNA_100.fasta containing 19423 transcripts
 ```
 To generate a non-redundant subset of transcripts, run blast all vs all, then process with a custom script  
 ```bash
 makeblastdb -in mRNA_100.fasta -dbtype nucl #building an index
-blastn -outfmt 6 -evalue 0.001 -db mRNA_100.fasta -query mRNA_100.fasta -out blast.result.txt
-BLASTNprocesor.pl blast_result.txt	#generates mRNA_100uniq.fasta containing 16936 transcripts
+blastn -outfmt 6 -evalue 0.001 -db mRNA_100.fasta -query mRNA_100.fasta -out blast_result.txt
+BLASTNprocessor.pl blast_result.txt	#generates mRNA_100uniq.fasta containing 16936 transcripts
 ```
 
 **Building necessary index files**  
