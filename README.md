@@ -51,6 +51,8 @@ BLASTNprocessor.pl blast_result.txt	#generates mRNA_100uniq.fasta containing 169
 **Building necessary index files**  
 ```bash
 bowtie2-build ./Human_indices/GRCh38.p12.custom.fna ./Human_indices/NCBI_genome # indexing human genome for bowtie2 and Tophat
+bowtie-build Human_rmtRNA.fa ./Human_indices/Human_rmtRNA
+bowtie-build mRNA_100uniq.fa ./Human_indices/mRNA_100uniq
 tophat -G GRCh38.p12.Refseq.coding.gff --transcriptome-index ./tophat-2.1.1/Human_indices/Refseq_coding ./bowtie2-2.2.7/Human_indices/NCBI_genome #Indexing human transcriptome for TopHat
 ```
  ### Illumina sequencing reads mapping
