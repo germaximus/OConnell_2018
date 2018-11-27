@@ -64,7 +64,7 @@ bowtie -p 36 --un filtered.fastq bowtie-1.2.1.1/Human_indices/Human_rmtRNA trimm
 tophat -p 50 --library-type fr-firststrand --transcriptome-index ../tophat-2.1.1/Human_indices/Refseq_coding --no-novel-juncs -o ./mRNA/ ../bowtie2-2.2.7/Human_indices/NCBI_genome filtered.fastq #mapping to a transcriptome and a genome
 featureCounts -g gene -s 2 accepted_hits.bam -a ./tophat-2.1.1/Human_indices/Refseq_coding.gff -o feature.counts #counting gene expression
 #mapping for coverage depth plots
-bowtie -p 36 -v 2 -m 1 –-nofw --max redundant.fastq /bowtie-1.2.2/mRNA_100uniq filtered.fastq >uniq.bwt
+bowtie -p 36 -v 2 -m 1 –-nofw --max redundant.fastq /bowtie-1.2.1.1/mRNA_100uniq filtered.fastq >uniq.bwt
 ```
 **Ribo-seq**  
 ```bash
@@ -74,6 +74,7 @@ bowtie -p 36 --un filtered.fastq ./bowtie-1.2.1.1/Human_indexes/Human_rmtRNA tri
 tophat --library-type fr-secondstrand --transcriptome-index ./tophat-2.1.1/Human_indices/Refseq_coding --no-novel-juncs -o ./output_folder ./bowtie2-2.2.7/Human_indices/NCBI_genome filtered.fastq
 featureCounts -g gene -s 1 accepted_hits.bam -a ./tophat-2.1.1/Human_indices/Refseq_coding.gff -o feature.counts
 #mapping for coverage depth plots
+bowtie -p 36 -v 2 -m 1 –-norc --max redundant.fastq /bowtie-1.2.1.1/mRNA_100uniq filtered.fastq >uniq.bwt
 ```
 
 ### Gene Expression Analysis
