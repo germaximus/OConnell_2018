@@ -31,6 +31,11 @@ Remove non-coding RNA genes, leave only coding genes with their mRNA, transcript
 ```bash
 Discard_noncoding_annotation.R
 ```
+Generate BEDplus file with exon and CDS boundaries
+```bash
+gff_to_bed.pl GRCh38.p12.Refseq.coding.gff #outputs annotation.bed, annotation.lkp and logfile.txt. Rename annotation.bed to GRCh38.p12.Refseq.coding.bed
+```
+
 
 **Preparing non-redundant transcript sequences**  
 Parse GRCh38.p12.gbk end extract the longest transcript for each gene.   
