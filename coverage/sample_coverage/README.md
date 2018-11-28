@@ -1,1 +1,1 @@
-Download coverage files from NCBI GEO rep
+Download required transcript coverage files from [GEO NCBI repository]()
