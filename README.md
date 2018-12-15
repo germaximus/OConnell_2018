@@ -8,7 +8,7 @@ TopHat 2.1.1
 Bowtie 2.2.7  
 featureCounts 1.6  
 blast 2.7.1+  
-Raw data, index files, and custom annotation can be found in the GEO [NCBI repository]()
+Raw and processed data can be found in the NCBI GEO repository [GSE123564NCBI repository](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE123564)
 
 ### Preparing genome annotation and index files
 Human genomic sequences and annotation files (GRCh38.p12) were downloaded from the [NCBI repository](ftp://ftp.ncbi.nih.gov/genomes/H_sapiens/).  
