@@ -1,6 +1,6 @@
-# OConnell_2018
+## Data Analysis for the O'Connell et al. (2019) PLOS Genetics
 
-## 
+[Mammalian Hbs1L deficiency causes congenital anomalies and developmental delay associated with Pelota depletion and 80S monosome accumulation](https://doi.org/10.1371/journal.pgen.1007917)
 
 **Prerequisites:**  
 Cutadapt 1.18  
